@@ -13,9 +13,9 @@ values ('Боинг 777-300'),
        ('Суперджет-100');
 
 insert into flight.seat (aircraft_id, seat_no)
-values (select id, s.column1
-from  flight.aircraft
-         cross join (VALUES ('A1'), ('A2'), ('B1'), ('B2'), ('C1'), ('C2'), ('D1'), ('D2') order by 1) s);
+(select id, s.column1
+from flight.aircraft
+         cross join (values ('A1'), ('A2'), ('B1'), ('B2'), ('C1'), ('C2'), ('D1'), ('D2') order by 1) s);
 
 insert into flight.flight (flight_no, departure_date, departure_airport_code, arrival_date, arrival_airport_code, aircraft_id,
                     status)
