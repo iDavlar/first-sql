@@ -1,7 +1,5 @@
 package by.davlar.jdbc.dao;
 
-import by.davlar.jdbc.dto.TicketFilter;
-import by.davlar.jdbc.entity.Ticket;
 import java.util.List;
 import java.util.Optional;
 
