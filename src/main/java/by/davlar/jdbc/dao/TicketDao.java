@@ -18,7 +18,7 @@ public class TicketDao
     private static final String SAVE_SQL = """
             INSERT INTO flight.ticket
             (passport_no, passenger_name, flight_id, seat_no, cost) 
-            VALUES (?,?,?,?,?);
+            VALUES (?, ?, ?, ?, ?);
             """;
 
     private static final String DELETE_SQL = """

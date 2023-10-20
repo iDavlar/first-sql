@@ -12,14 +12,30 @@ public abstract class AbstractDao<K, E>
         implements Dao<K, E>, ConnectableDao<K, E> {
 
     protected abstract String getSaveSql();
+
     protected abstract String getDeleteSql();
+
     protected abstract String getFindAllSql();
+
     protected abstract String getFindDyIdSql();
+
     protected abstract String getUpdateSql();
+
     protected abstract void setPrimaryKey(E entity, ResultSet keys) throws SQLException;
+
     protected abstract void setParametersSave(PreparedStatement statement, E entity) throws SQLException;
+
+    protected void setParametersDelete(PreparedStatement statement, K key) throws SQLException {
+        setPrimaryKeyParameters(statement, key);
+    };
+
     protected abstract void setParametersUpdate(PreparedStatement statement, E entity) throws SQLException;
+
     protected abstract E buildEntity(ResultSet resultSet) throws SQLException;
+
+    protected void setPrimaryKeyParameters(PreparedStatement statement, K key) throws SQLException {
+        statement.setObject(1, key);
+    }
 
     @Override
     public E save(E entity) {
@@ -33,9 +49,9 @@ public abstract class AbstractDao<K, E>
     }
 
     @Override
-    public boolean delete(K id) {
+    public boolean delete(K key) {
         try (var connection = ConnectionManager.get()) {
-            return delete(id, connection);
+            return delete(key, connection);
         } catch (DaoException e) {
             throw e;
         } catch (Throwable e) {
@@ -55,9 +71,9 @@ public abstract class AbstractDao<K, E>
     }
 
     @Override
-    public Optional<E> findById(K id) {
+    public Optional<E> findById(K key) {
         try (var connection = ConnectionManager.get()) {
-            return findById(id, connection);
+            return findById(key, connection);
         } catch (DaoException e) {
             throw e;
         } catch (Throwable e) {
@@ -93,10 +109,10 @@ public abstract class AbstractDao<K, E>
     }
 
     @Override
-    public boolean delete(K id, Connection connection) {
+    public boolean delete(K key, Connection connection) {
         try (var statement = connection.prepareStatement(getDeleteSql())) {
 
-            statement.setObject(1, id);
+            setParametersDelete(statement, key);
 
             return statement.executeUpdate() > 0;
 
@@ -124,9 +140,9 @@ public abstract class AbstractDao<K, E>
     }
 
     @Override
-    public Optional<E> findById(K id, Connection connection) {
+    public Optional<E> findById(K key, Connection connection) {
         try (var statement = connection.prepareStatement(getFindDyIdSql())) {
-            statement.setObject(1, id);
+            setPrimaryKeyParameters(statement, key);
 
             ResultSet resultSet = statement.executeQuery();
             E entity = null;
