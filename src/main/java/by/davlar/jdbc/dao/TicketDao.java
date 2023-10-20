@@ -5,17 +5,14 @@ import by.davlar.jdbc.entity.Ticket;
 import by.davlar.jdbc.exception.DaoException;
 import by.davlar.jdbc.utils.ConnectionManager;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TicketDao
-        implements Dao<Long, Ticket>, ConnectableDao<Long, Ticket> {
+        extends AbstractDao<Long, Ticket> {
     private static final TicketDao INSTANCE = new TicketDao();
 
     private static final String SAVE_SQL = """
@@ -51,36 +48,64 @@ public class TicketDao
             """;
 
     @Override
-    public Ticket save(Ticket ticket) {
-        try (var connection = ConnectionManager.get()) {
-            return save(ticket, connection);
-        } catch (DaoException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new DaoException(e);
-        }
+    protected String getSaveSql() {
+        return SAVE_SQL;
     }
 
     @Override
-    public boolean delete(Long id) {
-        try (var connection = ConnectionManager.get()) {
-            return delete(id, connection);
-        } catch (DaoException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new DaoException(e);
-        }
+    protected String getDeleteSql() {
+        return DELETE_SQL;
     }
 
     @Override
-    public List<Ticket> findAll() {
-        try (var connection = ConnectionManager.get()) {
-            return findAll(connection);
-        } catch (DaoException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new DaoException(e);
-        }
+    protected String getFindAllSql() {
+        return FIND_ALL_SQL;
+    }
+
+    @Override
+    protected String getFindDyIdSql() {
+        return FIND_BY_ID_SQL;
+    }
+
+    @Override
+    protected String getUpdateSql() {
+        return UPDATE_SQL;
+    }
+
+    @Override
+    protected void setPrimaryKey(Ticket entity, ResultSet keys) throws SQLException {
+        entity.setId(keys.getLong("id"));
+    }
+
+    @Override
+    protected void setParametersSave(PreparedStatement statement, Ticket entity) throws SQLException {
+        setNoPrimaryParameters(statement, entity);
+    }
+
+    @Override
+    protected void setParametersUpdate(PreparedStatement statement, Ticket entity) throws SQLException {
+        setNoPrimaryParameters(statement, entity);
+        statement.setLong(6, entity.getId());
+    }
+
+    private void setNoPrimaryParameters(PreparedStatement statement, Ticket entity) throws SQLException {
+        statement.setString(1, entity.getPassportNo());
+        statement.setString(2, entity.getPassengerName());
+        statement.setLong(3, entity.getFlightId());
+        statement.setString(4, entity.getSeatNo());
+        statement.setBigDecimal(5, entity.getCost());
+    }
+
+    @Override
+    protected Ticket buildEntity(ResultSet resultSet) throws SQLException {
+        return Ticket.builder()
+                .id(resultSet.getLong("id"))
+                .passportNo(resultSet.getString("passport_no"))
+                .passengerName(resultSet.getString("passenger_name"))
+                .flightId(resultSet.getLong("flight_id"))
+                .seatNo(resultSet.getString("seat_no"))
+                .cost(resultSet.getBigDecimal("cost"))
+                .build();
     }
 
     public List<Ticket> findAll(TicketFilter filter) {
@@ -101,7 +126,7 @@ public class TicketDao
                 parameters.size() > 2 ? "\nWHERE " : " ",
                 "\nLIMIT ?\nOFFSET ? "
         ));
-        String sql = FIND_ALL_SQL + where;
+        String sql = getFindAllSql() + where;
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(sql)) {
 
@@ -112,45 +137,12 @@ public class TicketDao
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 tickets.add(
-                        buildTicket(resultSet)
+                        buildEntity(resultSet)
                 );
             }
             return tickets;
 
         } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public Optional<Ticket> findById(Long id) {
-        try (var connection = ConnectionManager.get()) {
-            return findById(id, connection);
-        } catch (DaoException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new DaoException(e);
-        }
-    }
-
-    private static Ticket buildTicket(ResultSet resultSet) throws SQLException {
-        return Ticket.builder()
-                .id(resultSet.getLong("id"))
-                .passportNo(resultSet.getString("passport_no"))
-                .passengerName(resultSet.getString("passenger_name"))
-                .flightId(resultSet.getLong("flight_id"))
-                .seatNo(resultSet.getString("seat_no"))
-                .cost(resultSet.getBigDecimal("cost"))
-                .build();
-    }
-
-    @Override
-    public boolean update(Ticket ticket) {
-        try (var connection = ConnectionManager.get()) {
-            return update(ticket, connection);
-        } catch (DaoException e) {
-            throw e;
-        } catch (Throwable e) {
             throw new DaoException(e);
         }
     }
@@ -160,93 +152,5 @@ public class TicketDao
     }
 
     private TicketDao() {
-    }
-
-    @Override
-    public Ticket save(Ticket ticket, Connection connection) {
-        try (var statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-
-            statement.setString(1, ticket.getPassportNo());
-            statement.setString(2, ticket.getPassengerName());
-            statement.setLong(3, ticket.getFlightId());
-            statement.setString(4, ticket.getSeatNo());
-            statement.setBigDecimal(5, ticket.getCost());
-
-            statement.executeUpdate();
-
-            var keys = statement.getGeneratedKeys();
-            if (keys.next()) {
-                ticket.setId(keys.getLong("id"));
-            }
-            return ticket;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public boolean delete(Long id, Connection connection) {
-        try (var statement = connection.prepareStatement(DELETE_SQL)) {
-
-            statement.setLong(1, id);
-
-            return statement.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public List<Ticket> findAll(Connection connection) {
-        try (var statement = connection.prepareStatement(FIND_ALL_SQL)) {
-
-            List<Ticket> tickets = new ArrayList<>();
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                tickets.add(
-                        buildTicket(resultSet)
-                );
-            }
-            return tickets;
-
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public Optional<Ticket> findById(Long id, Connection connection) {
-        try (var statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
-            statement.setLong(1, id);
-
-            ResultSet resultSet = statement.executeQuery();
-            Ticket ticket = null;
-            if (resultSet.next()) {
-                ticket = buildTicket(resultSet);
-            }
-            return Optional.ofNullable(ticket);
-
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public boolean update(Ticket ticket, Connection connection) {
-        try (var statement = connection.prepareStatement(UPDATE_SQL)) {
-
-            statement.setString(1, ticket.getPassportNo());
-            statement.setString(2, ticket.getPassengerName());
-            statement.setLong(3, ticket.getFlightId());
-            statement.setString(4, ticket.getSeatNo());
-            statement.setBigDecimal(5, ticket.getCost());
-            statement.setLong(6, ticket.getId());
-
-            return statement.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
     }
 }
