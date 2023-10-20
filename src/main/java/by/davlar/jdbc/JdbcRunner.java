@@ -1,5 +1,7 @@
 package by.davlar.jdbc;
 
+import by.davlar.jdbc.dao.TicketDao;
+import by.davlar.jdbc.entity.Ticket;
 import by.davlar.jdbc.utils.ConnectionManager;
 
 import java.math.BigDecimal;
@@ -9,11 +11,21 @@ import java.sql.SQLException;
 
 public class JdbcRunner {
     public static void main(String[] args) throws SQLException {
-        showMostCommonPassengerNames();
-        showPassengerPurchases();
-        System.out.println(updatePassportInTicketById(1L, "1234FD"));
-        System.out.println(updatePassportInTicketById(1L, "112233"));
-        updateWithTransaction();
+        var ticketDao = TicketDao.getInstance();
+
+        Ticket ticket = Ticket.builder()
+                .passportNo("ght123")
+                .passengerName("Daniil")
+                .flightId(4L)
+                .seatNo("5B")
+                .cost(BigDecimal.valueOf(400L))
+                .build();
+
+        ticketDao.save(ticket);
+        System.out.println(ticket);
+        System.out.println(ticketDao.delete(ticket.getId()));
+        ticketDao.findAll().forEach(System.out::println);
+
     }
 
     private static void updateWithTransaction() {

@@ -1,12 +1,13 @@
 package by.davlar.jdbc.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class Ticket {
     private Long id;
     private String passportNo;
