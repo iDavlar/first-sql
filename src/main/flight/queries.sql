@@ -99,10 +99,3 @@ from (select f.arrival_airport_code,
                              left join flight.ticket t on f.id = t.flight_id
                     group by f.arrival_airport_code, f.departure_airport_code
                     order by total_cost desc) c3 on c3.row_number = c1.row_number - 1;
-
-
-
-
-
-
-

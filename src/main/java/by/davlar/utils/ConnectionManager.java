@@ -1,11 +1,10 @@
-package by.davlar.jdbc.utils;
+package by.davlar.utils;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 
 public final class ConnectionManager {

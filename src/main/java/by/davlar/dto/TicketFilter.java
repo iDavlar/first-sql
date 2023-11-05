@@ -1,4 +1,4 @@
-package by.davlar.jdbc.dto;
+package by.davlar.dto;
 
 public record TicketFilter(String passengerName,
                            String seatNo,

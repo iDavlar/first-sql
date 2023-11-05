@@ -1,14 +1,13 @@
 package by.davlar.jdbc.dao;
 
-import by.davlar.jdbc.dto.TicketFilter;
-import by.davlar.jdbc.entity.Ticket;
-import by.davlar.jdbc.exception.DaoException;
-import by.davlar.jdbc.utils.ConnectionManager;
+import by.davlar.dto.TicketFilter;
+import by.davlar.entity.Ticket;
+import by.davlar.exception.DaoException;
+import by.davlar.utils.ConnectionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TicketDao

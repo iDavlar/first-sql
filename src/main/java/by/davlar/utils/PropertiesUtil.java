@@ -1,4 +1,4 @@
-package by.davlar.jdbc.utils;
+package by.davlar.utils;
 
 
 import java.io.IOException;

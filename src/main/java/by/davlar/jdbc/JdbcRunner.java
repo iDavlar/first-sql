@@ -1,14 +1,10 @@
 package by.davlar.jdbc;
 
 import by.davlar.jdbc.dao.*;
-import by.davlar.jdbc.entity.*;
-import by.davlar.jdbc.utils.ConnectionManager;
+import by.davlar.entity.*;
+import by.davlar.utils.ConnectionManager;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 
 public class JdbcRunner {
     public static void main(String[] args) {
