@@ -1,4 +1,4 @@
-package by.davlar.entity;
+package by.davlar.jdbc.entity;
 
 import lombok.Builder;
 import lombok.Data;

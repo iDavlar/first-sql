@@ -1,4 +1,4 @@
-package by.davlar.exception;
+package by.davlar.jdbc.exception;
 
 public class DaoException extends RuntimeException {
     public DaoException(Throwable e) {
