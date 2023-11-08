@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Generated;
 
 import java.math.BigDecimal;
 
@@ -14,7 +13,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "ticket", schema = "flight")
+@Table(
+        name = "ticket",
+        schema = "flight",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"flight_id", "seat_no"})}
+)
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +26,9 @@ public class Ticket {
     private String passportNo;
     @Column(name = "passenger_name")
     private String passengerName;
-    @Column(name = "flight_id")
-    private Long flightId;
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "flight_id")
+    private Flight flight;
     @Column(name = "seat_no")
     private String seatNo;
     private BigDecimal cost;

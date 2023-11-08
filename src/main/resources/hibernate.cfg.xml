@@ -11,6 +11,10 @@
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
         <property name="hibernate.transaction.jta.platform">true</property>
+        <mapping class="by.davlar.hibernate.entity.Aircraft"/>
+        <mapping class="by.davlar.hibernate.entity.Airport"/>
+        <mapping class="by.davlar.hibernate.entity.Flight"/>
+        <mapping class="by.davlar.hibernate.entity.Seat"/>
         <mapping class="by.davlar.hibernate.entity.Ticket"/>
         <!-- DB schema will be updated if needed -->
         <!-- <property name="hibernate.hbm2ddl.auto">update</property> -->

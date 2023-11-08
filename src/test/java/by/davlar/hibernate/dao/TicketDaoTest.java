@@ -4,50 +4,65 @@ import by.davlar.hibernate.entity.Ticket;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TicketDaoTest {
 
     private final TicketDao ticketDao = TicketDao.getInstance();
+    private final FlightDao flightDao = FlightDao.getInstance();
 
     @Test
-    void save_noException() {
+    void save_noFail() {
         try {
             Ticket ticket = Ticket.builder()
                     .passportNo("17gh14")
                     .passengerName("Michele")
-                    .flightId(1L)
+                    .flight(flightDao.findById(1L).orElseThrow())
                     .seatNo("С15")
                     .cost(BigDecimal.valueOf(500))
                     .build();
+
             ticketDao.save(ticket);
-            ticketDao.delete(ticket);
+            var id = ticket.getId();
+            assertTrue(ticketDao.findById(id).isPresent());
+
+            assertTrue(ticketDao.delete(ticket));
+        } catch (NoSuchElementException e) {
+            fail("FlightDao does not work correctly");
         } catch (Throwable e) {
+            e.printStackTrace();
             fail("Test get failed");
         }
     }
 
     @Test
-    void delete_noException() {
+    void delete_noFail() {
         try {
             Ticket ticket = Ticket.builder()
                     .passportNo("17gh14")
                     .passengerName("Michele")
-                    .flightId(1L)
+                    .flight(flightDao.findById(1L).orElseThrow())
                     .seatNo("С15")
                     .cost(BigDecimal.valueOf(500))
                     .build();
+
             ticketDao.save(ticket);
-            ticketDao.delete(ticket);
+            var id = ticket.getId();
+            assertTrue(ticketDao.findById(id).isPresent());
+
+            assertTrue(ticketDao.delete(ticket));
+        } catch (NoSuchElementException e) {
+            fail("FlightDao does not work correctly");
         } catch (Throwable e) {
+            e.printStackTrace();
             fail("Test get failed");
         }
     }
 
     @Test
-    void update() {
+    void update_noFail() {
         try {
 
             var ticketOptional = ticketDao.findById(1L);
@@ -58,9 +73,11 @@ class TicketDaoTest {
 
             ticket.setCost(BigDecimal.valueOf(15));
             ticketDao.update(ticket);
+            assertNotEquals(ticket.getCost(), tempCoast);
 
             ticket.setCost(tempCoast);
             ticketDao.update(ticket);
+            assertEquals(ticket.getCost(), tempCoast);
         } catch (Throwable e) {
             fail("Test get failed");
         }
