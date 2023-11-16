@@ -16,6 +16,9 @@
         <mapping class="by.davlar.hibernate.entity.Flight"/>
         <mapping class="by.davlar.hibernate.entity.Seat"/>
         <mapping class="by.davlar.hibernate.entity.Ticket"/>
+        <mapping class="by.davlar.hibernate.entity.study.Course"/>
+        <mapping class="by.davlar.hibernate.entity.study.Student"/>
+        <mapping class="by.davlar.hibernate.entity.study.StudentProfile"/>
         <!-- DB schema will be updated if needed -->
         <!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
     </session-factory>

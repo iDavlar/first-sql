@@ -22,6 +22,7 @@ public abstract class AbstractDao<K, E>
     private Class<E> getEntityClass() {
         log.trace("EntityClass request");
         if (entityClass == null) {
+            //noinspection unchecked
             entityClass = (Class<E>) ((ParameterizedType) getClass()
                     .getGenericSuperclass()).getActualTypeArguments()[1];
             log.trace("EntityClass lazy initialisation");
