@@ -1,7 +1,7 @@
 package by.davlar.jdbc.dao;
 
-import by.davlar.exception.DaoException;
-import by.davlar.utils.ConnectionManager;
+import by.davlar.jdbc.exception.DaoException;
+import by.davlar.jdbc.utils.ConnectionManager;
 
 import java.sql.*;
 import java.util.ArrayList;

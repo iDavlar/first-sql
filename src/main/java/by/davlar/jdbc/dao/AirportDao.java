@@ -1,6 +1,6 @@
 package by.davlar.jdbc.dao;
 
-import by.davlar.entity.Airport;
+import by.davlar.jdbc.entity.Airport;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

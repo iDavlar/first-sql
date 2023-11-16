@@ -1,4 +1,4 @@
-package by.davlar.utils;
+package by.davlar.jdbc.utils;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;

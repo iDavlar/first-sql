@@ -1,8 +1,8 @@
 package by.davlar.jdbc;
 
 import by.davlar.jdbc.dao.*;
-import by.davlar.entity.*;
-import by.davlar.utils.ConnectionManager;
+import by.davlar.jdbc.entity.*;
+import by.davlar.jdbc.utils.ConnectionManager;
 
 import java.sql.SQLException;
 
