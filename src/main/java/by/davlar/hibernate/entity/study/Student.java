@@ -13,7 +13,6 @@ import lombok.*;
 @Table(name = "students", schema = "study")
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(nullable = false)
     private String name;

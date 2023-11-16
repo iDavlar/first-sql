@@ -19,6 +19,8 @@
         <mapping class="by.davlar.hibernate.entity.study.Course"/>
         <mapping class="by.davlar.hibernate.entity.study.Student"/>
         <mapping class="by.davlar.hibernate.entity.study.StudentProfile"/>
+        <mapping class="by.davlar.hibernate.entity.study.Trainer"/>
+        <mapping class="by.davlar.hibernate.entity.study.TrainerCourse"/>
         <!-- DB schema will be updated if needed -->
         <!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
     </session-factory>

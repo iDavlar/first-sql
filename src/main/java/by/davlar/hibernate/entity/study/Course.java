@@ -10,12 +10,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"students"})
+@ToString(exclude = {"students", "trainerCourse"})
 @Entity
 @Table(name = "courses", schema = "study")
 public class Course {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(unique = true, nullable = false)
     private String name;
@@ -23,6 +22,10 @@ public class Course {
     @Builder.Default
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Student> students = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    private List<TrainerCourse> trainerCourse = new ArrayList<>();
 
     public void addStudent(Student student) {
         students.add(student);
