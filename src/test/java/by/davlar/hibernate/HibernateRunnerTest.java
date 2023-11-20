@@ -1,5 +1,6 @@
 package by.davlar.hibernate;
 
+import by.davlar.hibernate.dao.study.TrainerCourseDao;
 import by.davlar.hibernate.entity.study.*;
 import by.davlar.hibernate.utils.ConfigurationManager;
 import org.hibernate.cfg.Configuration;
@@ -23,6 +24,11 @@ class HibernateRunnerTest {
         Course javaCore = Course.builder()
                 .id(2)
                 .name("Java Core")
+                .build();
+
+        Course willDelete = Course.builder()
+                .id(3)
+                .name("Will delete")
                 .build();
 
         Student daniil = Student.builder()
@@ -70,14 +76,18 @@ class HibernateRunnerTest {
         javaCore.addStudent(petr);
 
         List<Student> students = List.of(daniil, semen, kiril, petr);
-        List<Course> courses = List.of(javaEnterprise, javaCore);
+        List<Course> courses = List.of(javaEnterprise, javaCore, willDelete);
         List<StudentProfile> profiles = List.of(studentProfile1, studentProfile2, studentProfile3);
         List<Trainer> trainers = List.of(andrew, sasha);
+
+        List<TrainerCourse> trainerCourses = TrainerCourseDao.getInstance().findAll();
 
         Configuration configuration = ConfigurationManager.getConfiguration();
         try (var sessionFactory = configuration.buildSessionFactory();
              var session = sessionFactory.openSession()) {
             session.beginTransaction();
+
+            trainerCourses.forEach(session::remove);
 
             courses.forEach(session::merge);
 
@@ -156,7 +166,76 @@ class HibernateRunnerTest {
             trainerCourse.setTrainer(trainer);
             trainerCourse.setCourse(course);
 
-            session.merge(trainerCourse);
+            session.persist(trainerCourse);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Test
+    void createNewTrainerWithCourses() {
+
+        Trainer trainer = Trainer.builder()
+                .id(3)
+                .name("Test")
+                .build();
+
+        TrainerCourse trainerCourse1 = new TrainerCourse();
+        TrainerCourse trainerCourse2 = new TrainerCourse();
+
+        Configuration configuration = ConfigurationManager.getConfiguration();
+        try (var sessionFactory = configuration.buildSessionFactory();
+             var session = sessionFactory.openSession()) {
+            session.beginTransaction();
+
+            Course course1 = session.get(Course.class, 1);
+            Course course2 = session.get(Course.class, 2);
+
+            trainerCourse1.setTrainer(trainer);
+            trainerCourse1.setCourse(course1);
+            session.persist(trainerCourse1);
+
+            trainerCourse2.setTrainer(trainer);
+            trainerCourse2.setCourse(course2);
+            session.persist(trainerCourse2);
+
+            session.getTransaction().commit();
+        }
+    }
+
+    @Test
+    void changeCourse() {
+
+        Configuration configuration = ConfigurationManager.getConfiguration();
+        try (var sessionFactory = configuration.buildSessionFactory();
+             var session = sessionFactory.openSession()) {
+            session.beginTransaction();
+
+            Course course = session.get(Course.class, 1);
+            String tempName = course.getName();
+            course.setName("Test");
+
+            session.merge(course);
+
+            course.setName(tempName);
+            session.merge(course);
+
+            session.getTransaction().commit();
+        }
+    }
+
+    @Test
+    void deleteCourse() {
+
+        Configuration configuration = ConfigurationManager.getConfiguration();
+        try (var sessionFactory = configuration.buildSessionFactory();
+             var session = sessionFactory.openSession()) {
+            session.beginTransaction();
+
+            Course course = session.get(Course.class, 3);
+            session.remove(course);
+
+            assertNull(session.get(Course.class, 3));
+
             session.getTransaction().commit();
         }
     }
